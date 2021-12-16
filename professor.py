@@ -1,11 +1,10 @@
 from pessoa_fisica import PessoaFisica
 
-class Professor(PessoaFisica):
-    def __init__(self, nome, cpf, rg, nascimento, salario, formacao, vinculo):
-        super().__init__(nome, cpf, rg, nascimento)
-        self.__salario = salario
-        self.__formacao = formacao
-        self.__vinculo = vinculo
+class Professor(PessoaFisica) :
+    def __init__(self):
+        self.__salario = None
+        self.__formacao = None
+        self.__vinculo = None
 
     @property
     def salario(self):
@@ -17,17 +16,26 @@ class Professor(PessoaFisica):
 
     @property
     def vinculo(self):
-        return self.__formacao
+        return self.__vinculo
+
+    @formacao.setter
+    def formacao(self, formacao):
+        self.__formacao = formacao
+
+    @salario.setter
+    def salario(self, salario):
+        self.__salario = salario
+
+    @vinculo.setter
+    def vinculo(self, vinculo):
+        self.__vinculo = vinculo
 
     def __str__(self):
-        return "PROFESSOR - Nome: {} - CPF: {} - RG: {} - Nascimento: {} - " \
-               "Salário: {} - Formação: {} - Vínculo: {}".format(
-            super().nome, super().cpf, super().rg, super().dataNascimento,
-            self.__salario, self.__formacao, self.__vinculo)
+        return "{},{},{},{}\n".format(super().__str__(), self.__salario, self.__formacao, self.__vinculo)
 
-    def acessarEscola(self, codigoAcesso):
-        if(codigoAcesso == super().cpf):
-            print("Boa aula professor(a), {}".format(super().nome))
+    def acessarEscola(self, cpf):
+        if (cpf == super().cpf):
+            print("Boa aula professor(a)", super().nome)
             return True
         else:
             return False

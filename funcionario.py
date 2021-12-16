@@ -1,11 +1,10 @@
 from pessoa_fisica import PessoaFisica
 
 class Funcionario(PessoaFisica):
-    def __init__(self, nome, cpf, rg, nascimento, salario, cargo, horario):
-        super().__init__(nome, cpf, rg, nascimento)
-        self.__salario = salario
-        self.__cargo = cargo
-        self.__horario = horario
+    def __init__(self):
+        self.__salario = None
+        self.__cargo = None
+        self.__horario = None
 
     @property
     def salario(self):
@@ -19,15 +18,24 @@ class Funcionario(PessoaFisica):
     def horario(self):
         return self.__horario
 
-    def __str__(self):
-        return "FUNCIONÁRIO - Nome: {} - CPF: {} - RG: {} - Nascimento: {} - " \
-               "Salário: {} - Carga: {} - Horario: {}".format(
-            super().nome, super().cpf, super().rg, super().dataNascimento,
-            self.__salario, self.__cargo, self.__horario)
+    @salario.setter
+    def salario(self, salario):
+        self.__salario = salario
 
-    def acessarEscola(self, codigoAcesso):
-        if (codigoAcesso == super().cpf):
-            print("Bom trabalho, {}".format(super().nome))
+    @cargo.setter
+    def cargo(self, cargo):
+        self.__cargo = cargo
+
+    @horario.setter
+    def horario(self, horario):
+        self.__horario = horario
+
+    def __str__(self):
+        return "{},{},{},{}\n".format(super().__str__(), self.__salario, self.__cargo, self.__horario)
+
+    def acessarEscola(self, cpf):
+        if (cpf == super().cpf):
+            print("Bom trabalho ", super().nome)
             return True
-        else :
+        else:
             return False

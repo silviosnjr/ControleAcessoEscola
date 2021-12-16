@@ -1,33 +1,122 @@
+from pessoa_fisica import PessoaFisica
 from aluno import Aluno
-from funcionario import Funcionario
 from professor import Professor
+from funcionario import Funcionario
+from aluno_DAO import AlunoDAO
+from professor_DAO import ProfessorDAO
+from funcionario_DAO import FuncionarioDAO
+from validate_docbr import CPF
 
 class Escola():
-
     def __init__(self):
-        self.__nome = "Escola dos Programadores do Futuro"
-        aluno1 = Aluno("Beltrano", "111.222.333-44", "8.888.888-8", "01/02/1990", "111-1", "1º ano", "noite")
-        professor1 = Professor("Ciclano", "444.555.666-77", "0.000.000-0", "30/05/1988", "3.000,00", "geografia", "temporário")
-        funcionario1 = Funcionario("Fulano", "222.333.444-55", "9.999.999-9", "21/05/1989", "1.000,00", "zelador", "08:00 as 17:00")
-        aluno2 = Aluno("João", "999.222.333-44", "8.889.888-8", "10/03/1990", "333-1", "2º ano", "tarde")
-        professor2 = Professor("José", "888.555.666-77", "0.555.000-0", "20/05/1987", "3.000,00", "matemática", "permanente")
-        funcionario2 = Funcionario("Maria", "555.333.444-55", "9.000.999-9", "20/05/1980", "1.000,00", "zelador", "17:00 as 22:00")
-        self.__pessoas = [aluno1, professor1, funcionario1, aluno2, professor2, funcionario2]
+        self.__nome = "Escola Estadual Programadores do Futuro"
+        self.menu()
 
-    def __getitem__(self, item) :
+    def __getitem__(self, item):
         return self.__pessoas[item]
 
     def __len__(self):
         return len(self.__pessoas)
 
-    def solicitaAcessa(self):
+    def solicitarAcesso(self) :
+        print("\nSolicitando ACESSO À ESCOLA")
         codigo_acesso = input("Qual o seu código de acesso: ")
-        for pessoa in self.__pessoas :
+        pessoas = self.carregaPessoas()
+        for pessoa in pessoas:
             if(pessoa.acessarEscola(codigo_acesso)):
-                return True
-        print("Acesso negado!")
-        return False
+                print() #para qubrar uma linha
+                self.menu()
+        print ("Acesso negado!")
+        print()  # para qubrar uma linha
+        self.menu()
 
+    def menu(self):
+        print("MENU - O que você deseja fazer ?")
+        print("Digite 1 para adicionar um NOVO ALUNO ?")
+        print("Digite 2 para adicionar um NOVO PROFESSOR ?")
+        print("Digite 3 para adicionar um NOVO FUNCIONÁRIO ?")
+        print("Digite 4 para LISTAR TODOS")
+        print("Digite 5 para ACESSAR ESCOLA")
+        print("Digite 6 para SAIR")
 
+        resposta = input("Digite o número da sua respostas: ")
 
+        if(resposta == "1"):
+            self.adicionarAluno()
+        elif(resposta == "2"):
+            self.adicionarProfessor()
+        elif(resposta == "3"):
+            self.adicionarFuncionario()
+        elif(resposta == "4"):
+            self.listarTodos()
+        elif (resposta == "5"):
+            self.solicitarAcesso()
+        elif(resposta == "6"):
+            pass
 
+    def adicionarPessoaFisica(self, pessoa):
+        pessoa.nome = input("Nome: ")
+        cpf_valido = False
+        validador = CPF()
+        while(cpf_valido):
+            cpf = input("CPF: ")
+            cpf.replace(".", "")
+            cpf.replace("-", "")
+            cpf_valido = validador.validate(cpf)
+            if (not cpf_valido) : print("CPF Inválido, digite novamente!")
+        pessoa.cpf = validador.mask(input("CPF: "))
+        pessoa.rg = input("RG: ")
+        pessoa.nascimento = input("Data de Nascimento: ")
+
+    def adicionarAluno(self):
+        aluno = Aluno()
+        print("\nAdicionando um NOVO ALUNO(A)")
+        self.adicionarPessoaFisica(aluno)
+        aluno.cgm = input("Número CGM do aluno:")
+        aluno.turma = input("Turma do aluno:")
+        aluno.turno = input("Turno do aluno (manhã, tarde ou noite):")
+        dao_aluno = AlunoDAO()
+        dao_aluno.salvar(aluno, "dados/alunos.csv")
+        self.menu()
+
+    def adicionarProfessor(self):
+        professor = Professor()
+        print("\nAdicionando um NOVO PROFESSOR(A)")
+        self.adicionarPessoaFisica(professor)
+        professor.salario = input("Salário do aluno:")
+        professor.formacao = input("Formação do aluno:")
+        professor.vinculo = input("Vínculo do professor (permanente, temporário):")
+        dao_professor = ProfessorDAO()
+        dao_professor.salvar(professor, "dados/professores.csv")
+        self.menu()
+
+    def adicionarFuncionario(self):
+        funcionario = Funcionario()
+        print("\nAdicionando um NOVO FUNCIONÁRIO(A)")
+        self.adicionarPessoaFisica(funcionario)
+        funcionario.salario = input("Salário do aluno:")
+        funcionario.cargo = input("Cargo:")
+        funcionario.horario = input("Horário de trabalho:")
+        dao_funcionario = FuncionarioDAO()
+        dao_funcionario.salvar(funcionario, "dados/funcionarios.csv")
+        self.menu()
+
+    def listarTodos(self):
+        print("\nLISTA DE CADASTROS")
+        pessoas = self.carregaPessoas()
+        for pessoa in pessoas:
+            print(pessoa, end="")
+        print()  #para qubrar uma linha
+        self.menu()
+
+    def carregaPessoas(self):
+        dao_aluno = AlunoDAO()
+        dao_professor = ProfessorDAO()
+        dao_funcionario = FuncionarioDAO()
+
+        pessoas = []
+        pessoas = dao_aluno.listar("dados/alunos.csv")
+        pessoas += dao_professor.listar("dados/professores.csv")
+        pessoas += dao_funcionario.listar("dados/funcionarios.csv")
+
+        return pessoas
